@@ -29,7 +29,7 @@ public class Phase {
     @JoinColumn(name = "programme_formation_id")
     private ProgrammeFormation programmeFormation;
 
-    @OneToMany(mappedBy = "phase", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "phase", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private Set<FormationPredefinie> formationPredefinies;
 

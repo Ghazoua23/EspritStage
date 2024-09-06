@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface FormationRepository extends JpaRepository<Formation,Integer> {
     List<Formation> findByDateDebutBeforeAndDateFinAfter(Date dateFin, Date dateDebut);
+    // Méthode pour trouver les formations par l'ID du formateur
+    List<Formation> findByFormateur_IdEnseignant(Integer formateurId);
 }

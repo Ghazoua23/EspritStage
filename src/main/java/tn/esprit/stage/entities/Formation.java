@@ -32,9 +32,6 @@ public class Formation {
     public Date dateFin;
 
     @ManyToOne
-    private FormationPredefinie formationPred;
-
-    @ManyToOne
     private PeriodeFormation periodeFormation;
 
     @OneToMany(mappedBy = "formation", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -66,7 +63,7 @@ public class Formation {
             inverseJoinColumns = @JoinColumn(name = "enseignant_id"))
     private Set<Enseignant> participants = new HashSet<>();
 
-    @ManyToOne
+    @ManyToOne(optional = true)
     @JoinColumn(name = "formation_predefinie_id")
     private FormationPredefinie formationPredefinie;
 

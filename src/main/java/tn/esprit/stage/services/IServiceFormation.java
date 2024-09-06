@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface IServiceFormation {
 
-    public Formation createFormation(Formation formation, int formateurId, int formationPredefinieId);
+    public Formation createFormation(Formation formation, int formateurId, Integer formationPredefinieId);
 
     Formation updateFormation(int id, Formation formation);
 
@@ -16,4 +16,7 @@ public interface IServiceFormation {
     Formation getFormationById(int id);
 
     List<Formation> getAllFormations();
+
+    public List<Formation> getFormationsByFormateurId(Integer formateurId);
+
 }

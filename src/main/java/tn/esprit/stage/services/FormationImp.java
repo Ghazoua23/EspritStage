@@ -28,13 +28,22 @@ public class FormationImp implements IServiceFormation{
     private FormationPredefinieRepository formationPredefinieRepository;
 
     @Override
-    public Formation createFormation(Formation formation,int formateurId, int formationPredefinieId) {
+    public Formation createFormation(Formation formation,int formateurId, Integer formationPredefinieId) {
         // Assurez-vous que la formation n'est pas déjà dans la base de données
         if (formation.getId() != null && formationRepository.existsById(formation.getId())) {
             throw new EntityExistsException("La formation existe déjà");
         }
 
-        // Sauvegardez la nouvelle formation
+        // Si formationPredefinieId est fourni et valide, associez-le
+        if (formationPredefinieId != null && formationPredefinieId > 0) {
+            FormationPredefinie formationPredefinie = formationPredefinieRepository.findById(formationPredefinieId)
+                    .orElseThrow(() -> new RuntimeException("Formation pré-définie non trouvée"));
+            formation.setFormationPredefinie(formationPredefinie);
+        } else {
+            formation.setFormationPredefinie(null); // Pas d'association
+        }
+
+        // Sauvegarde de la nouvelle formation
         return formationRepository.save(formation);
     }
 
@@ -51,7 +60,7 @@ public class FormationImp implements IServiceFormation{
         existingFormation.setCout(formation.getCout());
         existingFormation.setDateDebut(formation.getDateDebut());
         existingFormation.setDateFin(formation.getDateFin());
-        existingFormation.setFormationPred(formation.getFormationPred());
+        existingFormation.setFormationPredefinie(formation.getFormationPredefinie());
         existingFormation.setPeriodeFormation(formation.getPeriodeFormation());
         existingFormation.setSeances(formation.getSeances());
         existingFormation.setEvaluationFormations(formation.getEvaluationFormations());
@@ -78,6 +87,12 @@ public class FormationImp implements IServiceFormation{
     @Override
     public List<Formation> getAllFormations() {
         return formationRepository.findAll();
+    }
+
+    @Override
+    // Méthode pour obtenir les formations par ID du formateur
+    public List<Formation> getFormationsByFormateurId(Integer formateurId) {
+        return formationRepository.findByFormateur_IdEnseignant(formateurId);
     }
 
 

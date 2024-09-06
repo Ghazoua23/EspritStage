@@ -35,24 +35,27 @@ public class FormationRsetController {
     private FormationPredefinieRepository formationPredefinieRepository;
 
 
-    @PostMapping("/add/{formateurId}/{formationPredefinieId}")
+    @PostMapping("/add/{formateurId}")
     public ResponseEntity<Formation> createFormation(
             @RequestBody Formation formationRequest,
             @PathVariable int formateurId,
-            @PathVariable int formationPredefinieId) {
+            @RequestParam(required = false) Integer formationPredefinieId) {
 
         // Vérification des données de la requête
-        if (formationRequest == null || formationRequest.getParticipants() == null || formationPredefinieId <= 0 || formateurId <= 0) {
-            System.out.println("Participants : " + formationRequest.getParticipants());
+        if (formationRequest == null || formationRequest.getParticipants() == null || formateurId <= 0) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         // Récupération des entités
-        FormationPredefinie formationPredefinie = formationPredefinieRepository.findById(formationPredefinieId)
-                .orElseThrow(() -> new RuntimeException("Formation pré-définie non trouvée"));
-
         Enseignant formateur = enseignantRepository.findById(formateurId)
                 .orElseThrow(() -> new RuntimeException("Formateur non trouvé"));
+
+        // Si l'ID de formationPredefinie est fourni, récupérer la formation pré-définie
+        FormationPredefinie formationPredefinie = null;
+        if (formationPredefinieId != null && formationPredefinieId > 0) {
+            formationPredefinie = formationPredefinieRepository.findById(formationPredefinieId)
+                    .orElseThrow(() -> new RuntimeException("Formation pré-définie non trouvée"));
+        }
 
         // Convertir les IDs des participants en objets Enseignant
         Set<Enseignant> participants = new HashSet<>();
@@ -64,19 +67,14 @@ public class FormationRsetController {
         formationRequest.setParticipants(participants);
 
         // Préparer l'objet Formation
-        formationRequest.setFormationPredefinie(formationPredefinie);
         formationRequest.setFormateur(formateur);
+        formationRequest.setFormationPredefinie(formationPredefinie); // Peut être null si pas d'association
 
-
-        // Les participants ont déjà été désérialisés correctement
         // Sauvegarde de la formation
         Formation createdFormation = formationService.createFormation(formationRequest, formateurId, formationPredefinieId);
 
         return new ResponseEntity<>(createdFormation, HttpStatus.CREATED);
     }
-
-
-
 
     @PutMapping("/{id}")
     public ResponseEntity<Formation> updateFormation(@PathVariable int id, @RequestBody Formation formation) {
@@ -100,6 +98,11 @@ public class FormationRsetController {
     public ResponseEntity<List<Formation>> getAllFormations() {
         List<Formation> formations = formationService.getAllFormations();
         return new ResponseEntity<>(formations, HttpStatus.OK);
+    }
+
+    @GetMapping("/formateur/{formateurId}")
+    public List<Formation> getFormationsByFormateur(@PathVariable Integer formateurId) {
+        return formationService.getFormationsByFormateurId(formateurId);
     }
 
 }
