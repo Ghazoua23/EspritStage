@@ -22,8 +22,9 @@ function Presences() {
   const [presenceState, setPresenceState] = useState({});
 
   useEffect(() => {
+    const USER_ID = 2;
     axios
-      .get("http://localhost:8081/api/formations")
+      .get(`http://localhost:8081/api/formations/formateur/${USER_ID}`)
       .then((response) => {
         console.log(response.data); // Vérifiez ici la structure des données
         if (Array.isArray(response.data)) {

@@ -54,8 +54,9 @@ function Listes() {
   });
   // Fonction pour charger les programmes de formation depuis l'API
   const chargerFormations = () => {
+    const USER_ID = 2;
     axios
-      .get("http://localhost:8081/api/formations")
+      .get(`http://localhost:8081/api/formations/formateur/${USER_ID}`)
       .then((response) => {
         setFormations(response.data);
       })
@@ -136,6 +137,14 @@ function Listes() {
                 <Button
                   variant="contained"
                   className="btn btn-danger w-md"
+                  style={{
+                    backgroundColor: "#c62828",
+                    color: "white",
+                    border: "none",
+                    padding: "10px 20px",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                  }}
                   onClick={telechargerExcel}
                 >
                   Télécharger le fichier

@@ -125,19 +125,19 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Marquer les présences",
-    key: "presence",
-    icon: <Icon fontSize="small">add</Icon>, // Use an appropriate icon
-    route: "/presence",
-    component: <Presence />, // The Formation component
-  },
-  {
-    type: "collapse",
     name: "Liste des présence",
     key: "listePresence",
     icon: <Icon fontSize="small">list</Icon>, // Use an appropriate icon
     route: "/listePresence",
     component: <ListePresence />, // The Formation component
+  },
+  {
+    type: "collapse",
+    name: "Marquer les présences",
+    key: "presence",
+    icon: <Icon fontSize="small">add</Icon>, // Use an appropriate icon
+    route: "/presence",
+    component: <Presence />, // The Formation component
   },
   {
     type: "collapse",

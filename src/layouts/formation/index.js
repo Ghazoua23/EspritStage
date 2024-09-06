@@ -102,8 +102,9 @@ function Formations() {
   };
   // Fonction pour charger les programmes de formation depuis l'API
   const chargerFormations = () => {
+    const USER_ID = 2;
     axios
-      .get("http://localhost:8081/api/formations")
+      .get(`http://localhost:8081/api/formations/formateur/${USER_ID}`)
       .then((response) => {
         setFormations(response.data);
         console.log(response.data);

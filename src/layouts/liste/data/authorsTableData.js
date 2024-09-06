@@ -25,7 +25,8 @@ export default function authorsTableData(formations = []) {
       .join(", ");
 
     return {
-      formationPredefinie: formation.formationPredefinie?.typeFormation || "N/A",
+      formationPredefinie:
+        formation.formationPredefinie?.typeFormation || "Aucune formation prédéfinie associée",
       type: formation.type,
       dateDebut: new Date(formation.dateDebut).toLocaleString(),
       dateFin: new Date(formation.dateFin).toLocaleString(),

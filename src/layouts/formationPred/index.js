@@ -19,6 +19,7 @@ import Card from "@mui/material/Card";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Checkbox from "@mui/material/Checkbox";
+import Button from "@mui/material/Button";
 import ListItemText from "@mui/material/ListItemText";
 
 import { ToastContainer, toast } from "react-toastify";
@@ -84,7 +85,7 @@ function Formations() {
 
   const handleAddFormationSubmit = (e) => {
     e.preventDefault();
-
+    // Préparer les données de la formation
     const formData = {
       type,
       responsableFormation,
@@ -95,49 +96,64 @@ function Formations() {
       dateFin,
       participants: selectedUsers,
     };
-
-    if (selectedFormationId == null) {
-      console.error("L'ID de la formation sélectionnée est manquant.");
-      return;
-    }
-
     // Réinitialiser les erreurs
     setErrors({});
-
-    const today = new Date().toISOString().split("T")[0]; // Date système au format YYYY-MM-DD
+    // Vérifier la dateDebut
+    const today = new Date().toISOString().split("T")[0]; // Date actuelle au format YYYY-MM-DD
     let formErrors = {};
-
-    // Contrôle de la dateDebut
     if (dateDebut < today) {
       formErrors.dateDebut = "La date de début ne peut pas être antérieure à la date actuelle.";
     }
-
-    // Contrôle de la dateFin
+    // Vérifier la dateFin
     if (dateFin && dateDebut && dateFin < dateDebut) {
       formErrors.dateFin = "La date de fin ne peut pas être antérieure à la date de début.";
     }
-
-    console.log("Données de formation:", formData);
-    console.log(selectedUsers);
-
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors);
+      return;
+    }
+    // Vérifier l'ID de la formation prédéfinie
     const USER_ID = 2; // Remplacez par l'ID réel du userApp
-
-    axios
-      .post(`http://localhost:8081/api/formations/add/${USER_ID}/${selectedFormationId}`, formData) // formateurId est ici codé en dur à 1, vous pouvez le rendre dynamique
-      .then((response) => {
-        console.log("Formation ajoutée:", response.data);
-        setShowForm(false); // Cache le formulaire après l'ajout
-        setFormations([...formations, response.data]); // Ajoute la nouvelle formation à la liste
-      })
-      .catch((error) => {
-        if (error.response) {
-          console.error("Erreur lors de l'ajout de la formation:", error.response.data);
-        } else if (error.request) {
-          console.error("Erreur de requête:", error.request);
-        } else {
-          console.error("Erreur:", error.message);
-        }
-      });
+    if (formationPredefinieId == null) {
+      // Pas d'ID de formation prédéfinie, on ajoute la formation sans l'associer
+      axios
+        .post(`http://localhost:8081/api/formations/add/${USER_ID}`, formData) // On n'inclut pas l'ID de formation prédéfinie
+        .then((response) => {
+          console.log("Formation ajoutée:", response.data);
+          setShowForm(false); // Masquer le formulaire après ajout
+          setFormations([...formations, response.data]); // Ajouter la formation à la liste
+        })
+        .catch((error) => {
+          if (error.response) {
+            console.error("Erreur lors de l'ajout de la formation:", error.response.data);
+          } else if (error.request) {
+            console.error("Erreur de requête:", error.request);
+          } else {
+            console.error("Erreur:", error.message);
+          }
+        });
+    } else {
+      // Ajouter la formation avec l'ID de formation prédéfinie
+      axios
+        .post(
+          `http://localhost:8081/api/formations/add/${USER_ID}/${formationPredefinieId}`,
+          formData
+        ) // Inclut l'ID de formation prédéfinie
+        .then((response) => {
+          console.log("Formation ajoutée:", response.data);
+          setShowForm(false); // Masquer le formulaire après ajout
+          setFormations([...formations, response.data]); // Ajouter la formation à la liste
+        })
+        .catch((error) => {
+          if (error.response) {
+            console.error("Erreur lors de l'ajout de la formation:", error.response.data);
+          } else if (error.request) {
+            console.error("Erreur de requête:", error.request);
+          } else {
+            console.error("Erreur:", error.message);
+          }
+        });
+    }
   };
   // Utilisation de authorsTableData pour obtenir columns et rows
   const { columns, rows } = authorsTableData(formations, handleAddFormationClick);
@@ -174,6 +190,27 @@ function Formations() {
                   showTotalEntries={false}
                   noEndBorder
                 />
+              </MDBox>
+              <MDBox px={2} pb={2}>
+                <Button
+                  variant="contained"
+                  className="btn btn-danger w-md"
+                  style={{
+                    backgroundColor: "#c62828",
+                    color: "white",
+                    border: "none",
+                    padding: "10px 20px",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    setSelectedFormationId(null);
+                    setFormationPredefinieId(null);
+                    setShowForm(true); // Affiche le formulaire sans formation prédéfinie
+                  }}
+                >
+                  Ajouter une formation sans l&apos;association à une formation prédéfinie
+                </Button>
               </MDBox>
             </Card>
           </Grid>

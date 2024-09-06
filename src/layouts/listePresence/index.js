@@ -25,8 +25,9 @@ function ListePresences() {
 
   useEffect(() => {
     // Récupérer les formations
+    const USER_ID = 2;
     axios
-      .get("http://localhost:8081/api/formations")
+      .get(`http://localhost:8081/api/formations/formateur/${USER_ID}`)
       .then((response) => {
         console.log("Formations data:", response.data);
         if (Array.isArray(response.data)) {
